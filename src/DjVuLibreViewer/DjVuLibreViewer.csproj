@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AF257860-900B-48B9-9AE2-367BF2793146}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DjVuLibreViewer</RootNamespace>
+    <AssemblyName>DjVuLibreViewer</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\IDjVuMarker.cs" />
+    <Compile Include="Core\LinkClickEventHandler.cs" />
+    <Compile Include="Core\NativeMethods.cs" />
+    <Compile Include="Core\DjVuBookmarkCollection.cs" />
+    <Compile Include="Core\DjVuCharacterInformation.cs" />
+    <Compile Include="Core\DjVuDocument.cs" />
+    <Compile Include="Core\DjVuException.cs" />
+    <Compile Include="Core\DjVuFile.cs" />
+    <Compile Include="Core\DjVuInformation.cs" />
+    <Compile Include="Core\DjVuMarker.cs" />
+    <Compile Include="Core\DjVuMarkerCollection.cs" />
+    <Compile Include="Core\DjVuMatch.cs" />
+    <Compile Include="Core\DjVuMatches.cs" />
+    <Compile Include="Core\DjVuMouseState.cs" />
+    <Compile Include="Core\DjVuPageLink.cs" />
+    <Compile Include="Core\DjVuPageLinks.cs" />
+    <Compile Include="Core\DjVuPrintDocument.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Core\DjVuPrintMultiplePages.cs" />
+    <Compile Include="Core\DjVuPrintSettings.cs" />
+    <Compile Include="Core\DjVuSearchManager.cs" />
+    <Compile Include="Core\DjVuTextSelectionState.cs" />
+    <Compile Include="Drawing\DjVuImage.cs" />
+    <Compile Include="Drawing\DjVuImageAdorner.cs" />
+    <Compile Include="Drawing\DjVuPoint.cs" />
+    <Compile Include="Drawing\DjVuRectangle.cs" />
+    <Compile Include="Drawing\DjVuTextSpan.cs" />
+    <Compile Include="Enums\MouseWheelMode.cs" />
+    <Compile Include="Enums\DjVuPrintMode.cs" />
+    <Compile Include="Enums\DjVuRotation.cs" />
+    <Compile Include="Enums\DjVuCursorMode.cs" />
+    <Compile Include="Enums\DjVuPagesDisplayMode.cs" />
+    <Compile Include="Enums\DjVuZoomMode.cs" />
+    <Compile Include="Enums\ScrollAction.cs" />
+    <Compile Include="Helpers\BitmapHelper.cs" />
+    <Compile Include="Helpers\VisualHelper.cs" />
+    <Compile Include="IDjVuDocument.cs" />
+    <Compile Include="DjVuRenderer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScrollPanel.cs" />
+    <Compile Include="ScrollPanel.Kinetic.cs" />
+    <Compile Include="ScrollPanel.DjVuDocument.cs" />
+    <Compile Include="DjVuRenderer.TextSelection.cs" />
+    <Compile Include="ScrollPanel.Zooming.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\DjvuSharp\DjvuSharp\DjvuSharp.csproj">
+      <Project>{561812c2-8132-40d5-aaa5-792220d716aa}</Project>
+      <Name>DjvuSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

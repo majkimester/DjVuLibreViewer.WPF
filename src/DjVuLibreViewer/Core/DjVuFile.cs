@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 
 using DjvuSharp;
@@ -17,14 +16,11 @@ namespace DjVuLibreViewer.Core
 {
     internal class DjVuFile : IDisposable
     {
-        private static readonly Encoding FDjVuEncoding = new UnicodeEncoding(false, false, false);
-
         DjvuDocument _document;
         private bool _disposed;
 
         private long _DjVuFileSize = 0;
         private string _DjVuFilePath = null;
-        private string _DjVuVersion = null;
 
         public DjVuBookmarkCollection Bookmarks { get; private set; }
 
@@ -35,7 +31,6 @@ namespace DjVuLibreViewer.Core
 
             _DjVuFileSize = new FileInfo(djvuFile).Length;
             _DjVuFilePath = djvuFile;
-            _DjVuVersion = "0"; // TODO
 
             _document = DjvuDocument.Create(djvuFile);
 
@@ -146,13 +141,13 @@ namespace DjVuLibreViewer.Core
 
             for (int i = 0; i < pageCount; i++)
             {
-                result.Add(GetDjVuDocInfo(i));
+                result.Add(GetDjVuPageSize(i));
             }
 
             return result;
         }
 
-        public SizeF GetDjVuDocInfo(int pageNumber)
+        public SizeF GetDjVuPageSize(int pageNumber)
         {
             DjvuPage page = new DjvuPage(_document, pageNumber);
             return new SizeF(page.Width, page.Height);
@@ -565,43 +560,45 @@ namespace DjVuLibreViewer.Core
             }
             DjVuInfo.FileSize = _DjVuFileSize;
 
-            DjVuInfo.Creator = GetMetaText("Creator");
-            DjVuInfo.Title = GetMetaText("Title");
-            DjVuInfo.Author = GetMetaText("Author");
-            DjVuInfo.Subject = GetMetaText("Subject");
-            DjVuInfo.Keywords = GetMetaText("Keywords");
-            DjVuInfo.Producer = GetMetaText("Producer");
-            DjVuInfo.CreationDate = GetMetaTextAsDate("CreationDate");
-            DjVuInfo.ModificationDate = GetMetaTextAsDate("ModDate");
+            Annotation annotations = _document.GetAnnotations(true);
+            Dictionary<string, string> metadata = annotations?.Metadata;
+            if (metadata != null)
+            {
+                DjVuInfo.Creator = GetMetaText(metadata, "Creator");
+                DjVuInfo.Title = GetMetaText(metadata, "Title");
+                DjVuInfo.Author = GetMetaText(metadata, "Author");
+                DjVuInfo.Subject = GetMetaText(metadata, "Subject");
+                DjVuInfo.Keywords = GetMetaText(metadata, "Keywords");
+                DjVuInfo.Producer = GetMetaText(metadata, "Producer");
+                DjVuInfo.CreationDate = GetMetaTextAsDate(metadata, "CreationDate");
+                DjVuInfo.ModificationDate = GetMetaTextAsDate(metadata, "ModDate");
+            }
 
-            DjVuInfo.Version = _DjVuVersion;
+            DjvuPage page = new DjvuPage(_document, 0);
+            DjVuInfo.Version = page.Version.ToString();
             DjVuInfo.PageCount = _document.PageNumber;
 
-            SizeF size = GetDjVuDocInfo(0);
-            DjVuInfo.PageWidth = size.Width / 72f * 25.4f;
-            DjVuInfo.PageHeight = size.Height / 72f * 25.4f;
-
+            DjVuInfo.PageWidth = page.Width / page.Resolution * 25.4f;
+            DjVuInfo.PageHeight = page.Height / page.Resolution * 25.4f;
             return DjVuInfo;
         }
 
-        private string GetMetaText(string tag)
+        private string GetMetaText(Dictionary<string, string> metadata, string tag)
         {
-            /* TODO
-            uint length = NativeMethods.FPDF_GetMetaText(_document, tag, null, 0);
-            if (length <= 2)
-                return string.Empty;
-
-            byte[] buffer = new byte[length];
-            NativeMethods.FPDF_GetMetaText(_document, tag, buffer, length);
-
-            return Encoding.Unicode.GetString(buffer, 0, (int)(length - 2));
-            */
-            return "xxx";
+            if (metadata.TryGetValue(tag, out string value))
+            {
+                return value;
+            }
+            else if (metadata.TryGetValue(tag.ToLower(), out string value2))
+            {
+                return value2;
+            }
+            return string.Empty;
         }
 
-        public DateTime? GetMetaTextAsDate(string tag)
+        public DateTime? GetMetaTextAsDate(Dictionary<string, string> metadata, string tag)
         {
-            string dt = GetMetaText(tag);
+            string dt = GetMetaText(metadata, tag);
 
             if (string.IsNullOrEmpty(dt))
                 return null;

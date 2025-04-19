@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Drawing.Printing;
-using System.Runtime.InteropServices;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DjVuLibreViewer.Drawing;
 using DjVuLibreViewer.Enums;
-using DjvuSharp.Rendering;
 using WriteableBitmap = System.Windows.Media.Imaging.WriteableBitmap;
 
 namespace DjVuLibreViewer.Core
@@ -602,7 +598,7 @@ namespace DjVuLibreViewer.Core
         public void RotatePage(int page, DjVuRotation rotation)
         {
             _file.RotatePage(page, rotation);
-            _pageSizes[page] = _file.GetDjVuDocInfo(page);
+            _pageSizes[page] = _file.GetDjVuPageSize(page);
             PageSizes = new ReadOnlyCollection<SizeF>(_pageSizes);
         }
 
@@ -620,7 +616,7 @@ namespace DjVuLibreViewer.Core
             if (_pageSizes.Count > pageNo && pageNo >= 0)
             {
                 if (_pageSizes[pageNo].IsEmpty)
-                    _pageSizes[pageNo] = _file.GetDjVuDocInfo(pageNo);
+                    _pageSizes[pageNo] = _file.GetDjVuPageSize(pageNo);
 
                 return _pageSizes[pageNo];
             }

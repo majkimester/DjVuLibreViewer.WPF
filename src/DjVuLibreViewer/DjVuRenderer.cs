@@ -44,6 +44,9 @@ namespace DjVuLibreViewer
             Markers.Clear();
             _markersByPage = null;
             Panel.Children.Clear();
+            Rotate = DjVuRotation.Rotate0;
+            ZoomFactor = DefaultZoomFactor;
+            Zoom = DefaultZoom;
             GC.Collect();
         }
 

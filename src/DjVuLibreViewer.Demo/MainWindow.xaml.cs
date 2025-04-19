@@ -1,8 +1,4 @@
-﻿using Microsoft.Win32;
-using DjVuLibreViewer.Core;
-using DjVuLibreViewer.Enums;
-
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -12,9 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Drawing;
+
+using Microsoft.Win32;
+
+using DjVuLibreViewer.Enums;
+
 
 namespace DjVuLibreViewer.Demo
 {
@@ -222,6 +221,7 @@ namespace DjVuLibreViewer.Demo
 
                 sb.AppendLine($"Producer: {info.Producer}");
                 sb.AppendLine($"DjVu Version: {info.Version}");
+                sb.AppendLine($"Document type: {info.DocumentType}");
                 sb.AppendLine($"Page Count: {info.PageCount}");
                 sb.AppendLine($"Page Size: {info.PageWidth:0.0} x {info.PageHeight:0.0} mm");
 

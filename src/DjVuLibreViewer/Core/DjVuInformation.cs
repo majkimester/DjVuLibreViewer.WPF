@@ -19,6 +19,7 @@ namespace DjVuLibreViewer.Core
         public string Creator { get; set; }
         public string Producer { get; set; }
         public string Version { get; set; }
+        public string DocumentType { get; set; }
         public int PageCount { get; set; }
         public double PageWidth { get; set; }
         public double PageHeight { get; set; }

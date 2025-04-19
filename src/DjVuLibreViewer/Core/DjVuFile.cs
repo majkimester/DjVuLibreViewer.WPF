@@ -11,6 +11,7 @@ using DjVuLibreViewer.Drawing;
 using DjVuLibreViewer.Enums;
 using DjVuLibreViewer.Helpers;
 using System.Windows.Media.Imaging;
+using DjvuSharp.Enums;
 
 namespace DjVuLibreViewer.Core
 {
@@ -65,6 +66,13 @@ namespace DjVuLibreViewer.Core
             {
                 renderEngine.SetRowOrder(true);
                 DjvuPage page = new DjvuPage(_document, pageNumber);
+                page.Rotation = (PageRotation)rotate;
+                // Limit maximum render size
+                if (width > page.Width)
+                {
+                    width = page.Width;
+                    height = page.Height;
+                }
                 var pageRect = new DjvuSharp.Rectangle(0, 0, width, height);
                 var renderRect = new DjvuSharp.Rectangle(0, 0, width, height);
                 byte[] imagePixels = renderEngine.RenderPage(page, RenderMode.COLOR, pageRect, renderRect);
@@ -529,17 +537,6 @@ namespace DjVuLibreViewer.Core
             return new List<DjVuRectangle>();
         }
 
-        public DjVuRotation GetPageRotation(int pageNumber)
-        {
-            // TODO return NativeMethods.FPDFPage_GetRotation(GetPageData(pageNumber).Page);
-            return DjVuRotation.Rotate0;
-        }
-
-        public void RotatePage(int pageNumber, DjVuRotation rotation)
-        {
-            // TODO NativeMethods.FPDFPage_SetRotation(GetPageData(pageNumber).Page, rotation);
-        }
-
         public DjVuInformation GetInformation()
         {
             if (_disposed)
@@ -570,6 +567,7 @@ namespace DjVuLibreViewer.Core
 
             DjvuPage page = new DjvuPage(_document, 0);
             DjVuInfo.Version = page.Version.ToString();
+            DjVuInfo.DocumentType = _document.Type.ToString();
             DjVuInfo.PageCount = _document.PageNumber;
 
             DjVuInfo.PageWidth = page.Width / page.Resolution * 25.4f;

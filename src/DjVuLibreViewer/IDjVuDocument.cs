@@ -111,20 +111,6 @@ namespace DjVuLibreViewer
         DjVuPageLinks GetPageLinks(int page, Size size);
        
         /// <summary>
-        /// Get the current rotation of the page.
-        /// </summary>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        DjVuRotation GetPageRotation(int page);
-
-        /// <summary>
-        /// Rotate the page.
-        /// </summary>
-        /// <param name="page">The page to rotate.</param>
-        /// <param name="rotation">How to rotate the page.</param>
-        void RotatePage(int page, DjVuRotation rotation);
-
-        /// <summary>
         /// Get metadata information from the DjVu document.
         /// </summary>
         /// <returns>The DjVu metadata.</returns>

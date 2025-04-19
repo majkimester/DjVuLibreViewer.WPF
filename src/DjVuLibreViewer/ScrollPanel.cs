@@ -173,6 +173,7 @@ namespace DjVuLibreViewer
             {
                 // scroll to current page
                 double verticalOffset = GetPageVerticalOffset(page);
+                if (verticalOffset == VerticalOffset) verticalOffset++;
                 ScrollToVerticalOffset(verticalOffset);
             }
         }
@@ -235,7 +236,6 @@ namespace DjVuLibreViewer
                     Panel.Children.Add(Frames[i]);
                 }
 
-                //GC.Collect();
                 GotoPage(PageNo);
             }
         }
@@ -433,7 +433,8 @@ namespace DjVuLibreViewer
             base.OnScrollChanged(e);
             if (IsDocumentLoaded &&
                 PagesDisplayMode == DjVuPagesDisplayMode.ContinuousMode &&
-                Frames?.Length > 0)
+                Frames?.Length > 0 &&
+                e.VerticalChange != 0)
             {
                 // Render frames for continous mode
                 double startOffset = e.VerticalOffset;
@@ -479,7 +480,6 @@ namespace DjVuLibreViewer
                     position += pageHeightWithFrame;
                     PageNoLast = pageNoLast;
                 }
-                //GC.Collect();
             }
         }
 

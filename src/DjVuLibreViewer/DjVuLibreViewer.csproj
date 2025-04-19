@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="Core\IDjVuMarker.cs" />
     <Compile Include="Core\LinkClickEventHandler.cs" />
-    <Compile Include="Core\NativeMethods.cs" />
     <Compile Include="Core\DjVuBookmarkCollection.cs" />
     <Compile Include="Core\DjVuCharacterInformation.cs" />
     <Compile Include="Core\DjVuDocument.cs" />

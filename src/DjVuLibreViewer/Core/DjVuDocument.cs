@@ -326,28 +326,6 @@ namespace DjVuLibreViewer.Core
         }
 
         /// <summary>
-        /// Get the current rotation of the page.
-        /// </summary>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        public DjVuRotation GetPageRotation(int page)
-        {
-            return _file.GetPageRotation(page);
-        }
-
-        /// <summary>
-        /// Rotate the page.
-        /// </summary>
-        /// <param name="page">The page to rotate.</param>
-        /// <param name="rotation">How to rotate the page.</param>
-        public void RotatePage(int page, DjVuRotation rotation)
-        {
-            _file.RotatePage(page, rotation);
-            _pageSizes[page] = _file.GetDjVuPageSize(page);
-            PageSizes = new ReadOnlyCollection<SizeF>(_pageSizes);
-        }
-
-        /// <summary>
         /// Get metadata information from the DjVu document.
         /// </summary>
         /// <returns>The DjVu metadata.</returns>

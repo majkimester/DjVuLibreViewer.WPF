@@ -4,10 +4,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.Windows.Media.Imaging;
+using System.Windows.Media;
+
 using DjVuLibreViewer.Drawing;
 using DjVuLibreViewer.Enums;
-using WriteableBitmap = System.Windows.Media.Imaging.WriteableBitmap;
+
 
 namespace DjVuLibreViewer.Core
 {
@@ -72,229 +73,17 @@ namespace DjVuLibreViewer.Core
         /// <param name="dpiX">Horizontal DPI.</param>
         /// <param name="dpiY">Vertical DPI.</param>
         /// <param name="bounds">Bounds to render the page in.</param>
-        public void Render(int page, Graphics graphics, float dpiX, float dpiY, Rectangle bounds)
+        public void RenderToGraphics(int page, Graphics graphics, float dpiX, float dpiY, Rectangle bounds)
         {
             if (graphics == null)
                 throw new ArgumentNullException(nameof(graphics));
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            float graphicsDpiX = graphics.DpiX;
-            float graphicsDpiY = graphics.DpiY;
-
-            var dc = graphics.GetHdc();
-
-            try
-            {
-                if ((int)graphicsDpiX != (int)dpiX || (int)graphicsDpiY != (int)dpiY)
-                {
-                    var transform = new NativeMethods.XFORM
-                    {
-                        eM11 = graphicsDpiX / dpiX,
-                        eM22 = graphicsDpiY / dpiY
-                    };
-
-                    NativeMethods.SetGraphicsMode(dc, NativeMethods.GmAdvanced);
-                    NativeMethods.ModifyWorldTransform(dc, ref transform, NativeMethods.MwtLeftMultiply);
-                }
-
-                var point = new NativeMethods.POINT();
-                NativeMethods.SetViewportOrgEx(dc, bounds.X, bounds.Y, out point);
-
-                bool success = _file.RenderDjVuPageToDC(
-                    page,
-                    dc,
-                    (int)dpiX, (int)dpiY,
-                    0, 0, bounds.Width, bounds.Height
-                );
-
-                NativeMethods.SetViewportOrgEx(dc, point.X, point.Y, out point);
-
-                if (!success)
-                    throw new Win32Exception();
-            }
-            finally
-            {
-                graphics.ReleaseHdc(dc);
-            }
-        }
-
-        /// <summary>
-        /// Renders a page of the DjVu document to an image.
-        /// </summary>
-        /// <param name="page">Number of the page to render.</param>
-        /// <param name="dpiX">Horizontal DPI.</param>
-        /// <param name="dpiY">Vertical DPI.</param>
-        /// <returns>The rendered image.</returns>
-        public Image Render(int page, float dpiX, float dpiY)
-        {
-            var size = PageSizes[page];
-
-            return Render(page, (int)size.Width, (int)size.Height, dpiX, dpiY);
-        }
-
-        /// <summary>
-        /// Renders a page of the DjVu document to an image.
-        /// </summary>
-        /// <param name="page">Number of the page to render.</param>
-        /// <param name="width">Width of the rendered image.</param>
-        /// <param name="height">Height of the rendered image.</param>
-        /// <param name="dpiX">Horizontal DPI.</param>
-        /// <param name="dpiY">Vertical DPI.</param>
-        /// <returns>The rendered image.</returns>
-        public Image Render(int page, int width, int height, float dpiX, float dpiY)
-        {
-            return Render(page, width, height, dpiX, dpiY, 0);
-        }
-
-        /// <summary>
-        /// Renders a page of the DjVu document to an image.
-        /// </summary>
-        /// <param name="page">Number of the page to render.</param>
-        /// <param name="width">Width of the rendered image.</param>
-        /// <param name="height">Height of the rendered image.</param>
-        /// <param name="dpiX">Horizontal DPI.</param>
-        /// <param name="dpiY">Vertical DPI.</param>
-        /// <param name="rotate">Rotation.</param>
-        /// <param name="flags">Flags used to influence the rendering.</param>
-        /// <param name="drawFormFields">Draw form fields.</param>
-        /// <returns>The rendered image.</returns>
-        public Image Render(int page, int width, int height, float dpiX, float dpiY, DjVuRotation rotate)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().Name);
-
-            return null;
-
-
-            /*
-             
-                         var bitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            bitmap.SetResolution(dpiX, dpiY);
-
-            var data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-            try
-            {
-               return _file.RenderDjVuPage(page);
-
-            }
-            finally
-            {
-                bitmap.UnlockBits(data);
-            }
-
-             */
-
-
-            /* TODO
-            try
-            {
-                var handle = NativeMethods.FPDFBitmap_CreateEx(width, height, 4, data.Scan0, width * 4);
-
-                try
-                {
-                    uint background = (flags & DjVuRenderFlags.Transparent) == 0 ? 0xFFFFFFFF : 0x00FFFFFF;
-
-                    NativeMethods.FPDFBitmap_FillRect(handle, 0, 0, width, height, background);
-
-                    bool success = _file.RenderDjVuPageToBitmap(
-                        page,
-                        handle,
-                        (int)dpiX, (int)dpiY,
-                        0, 0, width, height,
-                        (int)rotate,
-                        FlagsToFPDFFlags(flags),
-                        drawFormFields
-                    );
-
-                    if (!success)
-                        throw new Win32Exception();
-                }
-                finally
-                {
-                    NativeMethods.FPDFBitmap_Destroy(handle);
-                }
-            }
-            finally
-            {
-                bitmap.UnlockBits(data);
-            }
-            */
-        }
-
-        /// <summary>
-        /// Renders a page of the DjVu document to an image source.
-        /// </summary>
-        /// <param name="page">Number of the page to render.</param>
-        /// <param name="width">Width of the rendered image.</param>
-        /// <param name="height">Height of the rendered image.</param>
-        /// <param name="dpiX">Horizontal DPI.</param>
-        /// <param name="dpiY">Vertical DPI.</param>
-        /// <param name="rotate">Rotation.</param>
-        /// <param name="flags">Flags used to influence the rendering.</param>
-        /// <param name="drawFormFields">Draw form fields.</param>
-        /// <returns>The rendered image.</returns>
-        public WriteableBitmap Render2(int page, int width, int height, float dpiX, float dpiY, DjVuRotation rotate)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().Name);
-
-            /*
-            if ((flags & DjVuRenderFlags.CorrectFromDpi) != 0)
-            {
-                width = width * (int)dpiX / 72;
-                height = height * (int)dpiY / 72;
-            }
-            */
-
-            var writeableBitmap = new WriteableBitmap(width, height, dpiX, dpiY, System.Windows.Media.PixelFormats.Bgra32, null);
-
-            /*
-            try
-            {
-                // Reserve the back buffer for updates.
-                writeableBitmap.Lock();
-
-                IntPtr buffer = writeableBitmap.BackBuffer;
-
-                var handle = NativeMethods.FPDFBitmap_CreateEx(width, height, 4, buffer, width * 4);
-
-                try
-                {
-                    uint background = (flags & DjVuRenderFlags.Transparent) == 0 ? 0xFFFFFFFF : 0x00FFFFFF;
-
-                    NativeMethods.FPDFBitmap_FillRect(handle, 0, 0, width, height, background);
-
-                    bool success = _file.RenderDjVuPageToBitmap(
-                        page,
-                        handle,
-                        (int)dpiX, (int)dpiY,
-                        0, 0, width, height,
-                        (int)rotate,
-                        FlagsToFPDFFlags(flags),
-                        drawFormFields
-                    );
-
-                    if (!success)
-                        throw new Win32Exception();
-                }
-                finally
-                {
-                    NativeMethods.FPDFBitmap_Destroy(handle);
-                }
-
-                // Specify the area of the bitmap that changed.
-                writeableBitmap.AddDirtyRect(new System.Windows.Int32Rect(0, 0, width, height));
-            }
-            finally
-            {
-                // Release the back buffer and make it available for display.
-                writeableBitmap.Unlock();
-                writeableBitmap.Freeze();
-            }
-            */
-
-            return writeableBitmap;
+            graphics.PageUnit = GraphicsUnit.Pixel;
+            Bitmap bitmap = _file.RenderDjVuPageToBitmap(page, bounds.Width, bounds.Height, (int)dpiX, (int)dpiY, DjVuRotation.Rotate0);
+            graphics.DrawImage(bitmap, bounds);
+            bitmap.Dispose();
         }
 
         /// <summary>
@@ -307,72 +96,28 @@ namespace DjVuLibreViewer.Core
         /// <param name="dpiY">Vertical DPI.</param>
         /// <param name="rotate">Rotation.</param>
         /// <returns>The rendered image.</returns>
-        public BitmapSource Render3(int page, int width, int height, float dpiX, float dpiY, DjVuRotation rotate)
+        public Bitmap RenderToBitmap(int page, int width, int height, float dpiX, float dpiY, DjVuRotation rotate)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            return _file.RenderDjVuPage(page);
+            return _file.RenderDjVuPageToBitmap(page, width, height, (int)dpiX, (int)dpiY, rotate);
+        }
 
-            /*
-            if ((flags & DjVuRenderFlags.CorrectFromDpi) != 0)
-            {
-                width = width * (int)dpiX / 72;
-                height = height * (int)dpiY / 72;
-            }
-            */
+        /// <summary>
+        /// Renders a page of the DjVu document to an image.
+        /// </summary>
+        /// <param name="page">Number of the page to render.</param>
+        /// <param name="width">Width of the rendered image.</param>
+        /// <param name="height">Height of the rendered image.</param>
+        /// <param name="rotate">Rotation.</param>
+        /// <returns>The rendered image.</returns>
+        public ImageSource Render(int page, int width, int height, DjVuRotation rotate)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
 
-            // Create byte array to hold image data
-            //byte[] imageData = new byte[width * height * 4]; // Assuming 32bpp ARGB format
-            // GCHandle pinnedArray = GCHandle.Alloc(imageData, GCHandleType.Pinned);
-            //IntPtr pointer = pinnedArray.AddrOfPinnedObject();
-
-            /*
-            try
-            {
-                var handle = NativeMethods.FPDFBitmap_CreateEx(width, height, 4, pointer, width * 4);
-                try
-                {
-                    uint background = (flags & DjVuRenderFlags.Transparent) == 0 ? 0xFFFFFFFF : 0x00FFFFFF;
-
-                    NativeMethods.FPDFBitmap_FillRect(handle, 0, 0, width, height, background);
-
-                    bool success = _file.RenderDjVuPageToBitmap(
-                        page,
-                        handle,
-                        (int)dpiX, (int)dpiY,
-                        0, 0, width, height,
-                        (int)rotate,
-                        FlagsToFPDFFlags(flags),
-                        drawFormFields
-                    );
-
-                    if (!success)
-                        throw new Win32Exception();
-                }
-                finally
-                {
-                    NativeMethods.FPDFBitmap_Destroy(handle);
-                }
-
-                var bitmapSource = BitmapSource.Create(
-                    width,
-                    height,
-                    dpiX,
-                    dpiY,
-                    PixelFormats.Bgra32,
-                    null,
-                    imageData,
-                    width * 4);
-                bitmapSource.Freeze();
-                return bitmapSource;
-            }
-            finally
-            {
-                pinnedArray.Free();
-            }
-            */
-            //return null;
+            return _file.RenderDjVuPage(page, width, height, rotate);
         }
 
         /// <summary>

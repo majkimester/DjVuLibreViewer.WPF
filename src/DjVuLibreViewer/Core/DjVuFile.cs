@@ -38,30 +38,7 @@ namespace DjVuLibreViewer.Core
             LoadBookmarks(Bookmarks);
         }
 
-        public bool RenderDjVuPageToDC(int pageNumber, IntPtr dc, int dpiX, int dpiY, int boundsOriginX, int boundsOriginY, int boundsWidth, int boundsHeight)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().Name);
-
-            // TODO render
-            // NativeMethods.FPDF_RenderPage(dc, GetPageData(pageNumber).Page, boundsOriginX, boundsOriginY, boundsWidth, boundsHeight, 0, flags);
-
-            return true;
-        }
-
-        public bool RenderDjVuPageToBitmap(int pageNumber, IntPtr bitmapHandle, int dpiX, int dpiY, int boundsOriginX, int boundsOriginY, int boundsWidth, int boundsHeight, int rotate)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().Name);
-
-            // TODO render
-            //var pageData = GetPageData(pageNumber);
-            // NativeMethods.FPDF_RenderPageBitmap(bitmapHandle, pageData.Page, boundsOriginX, boundsOriginY, boundsWidth, boundsHeight, rotate, flags);
-
-            return true;
-        }
-
-        public BitmapSource RenderDjVuPage(int pageNumber)
+        public Bitmap RenderDjVuPageToBitmap(int pageNumber, int width, int height, int dpiX, int dpiY, DjVuRotation rotate)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
@@ -69,12 +46,29 @@ namespace DjVuLibreViewer.Core
             using (var renderEngine = RenderEngineFactory.CreateRenderEngine(PixelFormatStyle.RGB24))
             {
                 renderEngine.SetRowOrder(true);
-
                 DjvuPage page = new DjvuPage(_document, pageNumber);
-                var pageRect = new DjvuSharp.Rectangle(0, 0, page.Width, page.Height);
-                var renderRect = new DjvuSharp.Rectangle(0, 0, page.Width, page.Height);
+                width = width * dpiX / page.Resolution;
+                height = height * dpiX / page.Resolution;
+                var pageRect = new DjvuSharp.Rectangle(0, 0, width, height);
+                var renderRect = new DjvuSharp.Rectangle(0, 0, width, height);
                 byte[] imagePixels = renderEngine.RenderPage(page, RenderMode.COLOR, pageRect, renderRect);
-                return BitmapHelper.CreateFromRgb24(imagePixels, page.Width, page.Height);
+                return BitmapHelper.CreateBitmapFromRgb24(imagePixels, width, height, dpiX, dpiY);
+            }
+        }
+
+        public BitmapSource RenderDjVuPage(int pageNumber, int width, int height, DjVuRotation rotate)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
+            using (var renderEngine = RenderEngineFactory.CreateRenderEngine(PixelFormatStyle.RGB24))
+            {
+                renderEngine.SetRowOrder(true);
+                DjvuPage page = new DjvuPage(_document, pageNumber);
+                var pageRect = new DjvuSharp.Rectangle(0, 0, width, height);
+                var renderRect = new DjvuSharp.Rectangle(0, 0, width, height);
+                byte[] imagePixels = renderEngine.RenderPage(page, RenderMode.COLOR, pageRect, renderRect);
+                return BitmapHelper.CreateFromRgb24(imagePixels, width, height, 96, 96);
             }
         }
 

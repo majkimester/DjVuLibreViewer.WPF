@@ -2,37 +2,18 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.IO;
 using System.Windows.Documents;
+
 using DjVuLibreViewer.Core;
 using DjVuLibreViewer.Drawing;
 using DjVuLibreViewer.Enums;
+
 
 namespace DjVuLibreViewer
 {
     // ScrollPanel.DjVuDocument
     public partial class ScrollPanel
     {
-        public void Render(int page, Graphics graphics, float dpiX, float dpiY, Rectangle bounds)
-        {
-            Document.Render(page, graphics, dpiX, dpiY, bounds);
-        }
-
-        public Image Render(int page, float dpiX, float dpiY)
-        {
-            return Document.Render(page, dpiX, dpiY);
-        }
-
-        public Image Render(int page, int width, int height, float dpiX, float dpiY)
-        {
-            return Document.Render(page, width, height, dpiX, dpiY);
-        }
-
-        public Image Render(int page, int width, int height, float dpiX, float dpiY, DjVuRotation rotate)
-        {
-            return Document.Render(page, width, height, dpiX, dpiY, rotate);
-        }
-
         public DjVuMatches Search(string text, bool matchCase, bool wholeWord)
         {
             return Document?.Search(text, matchCase, wholeWord);

@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Windows.Media;
+
 using DjVuLibreViewer.Core;
 using DjVuLibreViewer.Drawing;
 using DjVuLibreViewer.Enums;
+
 
 namespace DjVuLibreViewer
 {
@@ -36,16 +39,7 @@ namespace DjVuLibreViewer
         /// <param name="dpiX">Horizontal DPI.</param>
         /// <param name="dpiY">Vertical DPI.</param>
         /// <param name="bounds">Bounds to render the page in.</param>
-        void Render(int page, Graphics graphics, float dpiX, float dpiY, Rectangle bounds);
-
-        /// <summary>
-        /// Renders a page of the DjVu document to an image.
-        /// </summary>
-        /// <param name="page">Number of the page to render.</param>
-        /// <param name="dpiX">Horizontal DPI.</param>
-        /// <param name="dpiY">Vertical DPI.</param>
-        /// <returns>The rendered image.</returns>
-        Image Render(int page, float dpiX, float dpiY);
+        void RenderToGraphics(int page, Graphics graphics, float dpiX, float dpiY, Rectangle bounds);
 
         /// <summary>
         /// Renders a page of the DjVu document to an image.
@@ -53,22 +47,9 @@ namespace DjVuLibreViewer
         /// <param name="page">Number of the page to render.</param>
         /// <param name="width">Width of the rendered image.</param>
         /// <param name="height">Height of the rendered image.</param>
-        /// <param name="dpiX">Horizontal DPI.</param>
-        /// <param name="dpiY">Vertical DPI.</param>
-        /// <returns>The rendered image.</returns>
-        Image Render(int page, int width, int height, float dpiX, float dpiY);
-
-        /// <summary>
-        /// Renders a page of the DjVu document to an image.
-        /// </summary>
-        /// <param name="page">Number of the page to render.</param>
-        /// <param name="width">Width of the rendered image.</param>
-        /// <param name="height">Height of the rendered image.</param>
-        /// <param name="dpiX">Horizontal DPI.</param>
-        /// <param name="dpiY">Vertical DPI.</param>
         /// <param name="rotate">Rotation.</param>
         /// <returns>The rendered image.</returns>
-        Image Render(int page, int width, int height, float dpiX, float dpiY, DjVuRotation rotate);
+        ImageSource Render(int page, int width, int height, DjVuRotation rotate);
 
         /// <summary>
         /// Finds all occurences of text.

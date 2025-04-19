@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Drawing;
 
 namespace DjVuLibreViewer.Demo
 {
@@ -286,8 +288,9 @@ namespace DjVuLibreViewer.Demo
                 for (var i = 0; i < Renderer.PageCount; i++)
                 {
                     var size = Renderer.Document.PageSizes[i];
-                    var image = Renderer.Document.Render(i, (int)size.Width * 5, (int)size.Height * 5, 300, 300);
-                    image.Save(Path.Combine(path, $"img{i}.png"));
+                    Image image = Renderer.Document.RenderToBitmap(i, (int)size.Width, (int)size.Height, 300, 300, DjVuRotation.Rotate0);
+                    image.Save(Path.Combine(path, $"img_{i}.png"));
+                    image.Dispose();
                 }
             }
             catch (Exception ex)

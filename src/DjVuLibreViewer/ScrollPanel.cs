@@ -251,39 +251,27 @@ namespace DjVuLibreViewer
             GotoPage(PageNo);
         }
 
-        protected BitmapSource RenderPage(DjVuImage frame, int page, int width, int height)
+        protected void RenderPage(DjVuImage frame, int page, int width, int height)
         {
-            if (frame == null || width == 0 || height == 0) return null;
+            if (frame == null || width == 0 || height == 0) return;
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            // Note: direct convert the DjVuium output to WriteableBitmap has a sighly worse performance than Render + ToBitmapSource2 method
-            // var bitmapImage = Document.Render2(page, width, height, Dpi, Dpi, Rotate, Flags, false);
-
-            // var image = Document.Render(page, width, height, Dpi, Dpi, Rotate, Flags);
-
-            // Note: direct convert the DjVuium output to BitmapSource: No memory leak here: GC.Collect is not needed
-            var bitmapImage = Document.Render3(page, width, height, Dpi, Dpi, Rotate);
-
+            var bitmapSource = Document.Render(page, width, height, Rotate);
             var partTime = stopwatch.ElapsedMilliseconds;
-
-            //BitmapSource bitmapImage = BitmapHelper.ToBitmapSource2(image as Bitmap);
 
             stopwatch.Stop();
             Debug.WriteLine("RenderPage[" + page + "]: " + (stopwatch.ElapsedMilliseconds) + " mS, (" + (stopwatch.ElapsedMilliseconds - partTime) +" mS) size=" + width + " x " + height);
 
-            //CurrentProcess?.Refresh();
             Dispatcher.Invoke(() =>
             {
                 frame.Width = width;
                 frame.Height = height;
-                frame.Source = bitmapImage;
+                frame.Source = bitmapSource;
                 frame.PageNo = page;
                 frame.PageLinks = GetPageLinks(page, new Size(width, height));
             });
-            //GC.Collect();
-            return bitmapImage;
         }
 
         protected Size CalculatePageSize(int? page = null)

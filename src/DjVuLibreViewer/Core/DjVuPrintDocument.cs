@@ -181,7 +181,7 @@ namespace DjVuLibreViewer.Core
             left += (width - scaledWidth) / 2;
             top += (height - scaledHeight) / 2;
 
-            _document.Render(
+            _document.RenderToGraphics(
                 page,
                 e.Graphics,
                 e.Graphics.DpiX,

@@ -217,9 +217,9 @@ namespace DjVuLibreViewer.Demo
                 sb.AppendLine($"Keywords: {info.Keywords}");
                 sb.AppendLine($"Create Date: {info.CreationDate}");
                 sb.AppendLine($"Modified Date: {info.ModificationDate}");
-                sb.AppendLine($"Creator: {info.Creator}\n");
+                sb.AppendLine($"Creator: {info.Creator}");
+                sb.AppendLine($"Producer: {info.Producer}\n");
 
-                sb.AppendLine($"Producer: {info.Producer}");
                 sb.AppendLine($"DjVu Version: {info.Version}");
                 sb.AppendLine($"Document type: {info.DocumentType}");
                 sb.AppendLine($"Page Count: {info.PageCount}");

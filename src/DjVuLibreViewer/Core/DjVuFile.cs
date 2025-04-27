@@ -415,9 +415,7 @@ namespace DjVuLibreViewer.Core
         public string GetDjVuText(int pageNumber)
         {
             DjvuPage page = new DjvuPage(_document, pageNumber);
-            return page.GetPageText(PageTextDetails.Page);
-
-            //TODO return GetDjVuText(pageData, new DjVuTextSpan(page, 0, length));
+            return page.GetPageFullText();
         }
 
         public string GetDjVuText(DjVuTextSpan textSpan)
